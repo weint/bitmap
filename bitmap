@@ -35,7 +35,7 @@ func (btm *BitMap) Del(num uint) {
 	word, bit := num/64, num%64
 	// 判断num是否已经存在btm中
 	if btm.Words[word]&(1<<bit) != 0 {
-		btm.Words[word] = btm.Words[word] & (^(1 << bit))
+		btm.Words[word] &= ^(1 << bit)
 		btm.Length--
 	}
 }
