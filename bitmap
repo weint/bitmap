@@ -1,0 +1,80 @@
+package bitmap
+
+import (
+	"bytes"
+	"strconv"
+)
+
+type BitMap struct {
+	Words  []uint64
+	Length int
+}
+
+func New() *BitMap {
+	return &BitMap{}
+}
+
+func (btm *BitMap) Has(num uint) bool {
+	word, bit := num/64, num%64
+	return word < uint(len(btm.Words)) && (btm.Words[word]&(1<<bit)) != 0
+}
+
+func (btm *BitMap) Add(num uint) {
+	word, bit := num/64, num%64
+	for word >= uint(len(btm.Words)) {
+		btm.Words = append(btm.Words, 0)
+	}
+	// 判断num是否已经存在btm中
+	if btm.Words[word]&(1<<bit) == 0 {
+		btm.Words[word] |= 1 << bit
+		btm.Length++
+	}
+}
+
+func (btm *BitMap) Del(num uint) {
+	word, bit := num/64, num%64
+	// 判断num是否已经存在btm中
+	if btm.Words[word]&(1<<bit) != 0 {
+		btm.Words[word] = btm.Words[word] & (^(1 << bit))
+		btm.Length--
+	}
+}
+
+func (btm *BitMap) Len() int {
+	return btm.Length
+}
+
+func (btm *BitMap) Lst() (lst []uint) {
+	for i, v := range btm.Words {
+		if v == 0 {
+			continue
+		}
+		for j := uint(0); j < 64; j++ {
+			if v&(1<<j) != 0 {
+				lst = append(lst, 64*uint(i)+j)
+			}
+		}
+	}
+	return
+}
+
+func (btm *BitMap) String() string {
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, v := range btm.Words {
+		if v == 0 {
+			continue
+		}
+		for j := uint(0); j < 64; j++ {
+			if v&(1<<j) != 0 {
+				if buf.Len() > len("{") {
+					buf.WriteByte(' ')
+				}
+				buf.WriteString(strconv.FormatUint(uint64(64*uint(i)+j), 10))
+			}
+		}
+	}
+	buf.WriteByte('}')
+	buf.WriteString("\nLength: " + strconv.Itoa(btm.Length))
+	return buf.String()
+}
