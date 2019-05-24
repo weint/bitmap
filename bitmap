@@ -78,3 +78,14 @@ func (btm *BitMap) String() string {
 	buf.WriteString("\nLength: " + strconv.Itoa(btm.Length))
 	return buf.String()
 }
+
+func (btm *BitMap) ReSize() {
+	words := btm.Lst()
+
+	btm.Words = []uint64{}
+	btm.Length = 0
+
+	for _, w := range words {
+		btm.Add(w)
+	}
+}
