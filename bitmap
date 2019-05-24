@@ -89,3 +89,11 @@ func (btm *BitMap) ReSize() {
 		btm.Add(w)
 	}
 }
+
+func (btm *BitMap) ReverseSort() (lst []uint) {
+	wds := btm.Lst()
+	for i := len(wds) - 1; i >= 0; i-- {
+		lst = append(lst, wds[i])
+	}
+	return
+}
